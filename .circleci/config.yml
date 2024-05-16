@@ -1,0 +1,45 @@
+# Couldn't automatically generate a config from your source code.
+# This is a generic template to serve as a base for your custom config
+# See: https://circleci.com/docs/configuration-reference
+version: 2.1
+jobs:
+  build:
+    macos:
+      xcode: 15.3.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - mise-{{ checksum ".tool-versions" }}
+            - tuist-install-{{ checksum "Tuist/Package.resolved" }}
+      - run:
+          name: Install Mise
+          command: |
+            if ~/.local/bin/mise --version > /dev/null 2>&1; then
+              echo "Mise is already installed"
+            else
+              curl https://mise.run | sh
+            fi
+            
+            ~/.local/bin/mise install
+      - run:
+          name: Tuist Install
+          command: |
+            ~/.local/bin/mise x -- tuist install
+      - run:
+           name: Tuist Build
+           command: |
+            ~/.local/bin/mise x -- tuist build
+      - save_cache:
+          paths:
+            - Tuist/Dependencies
+          key: tuist-install-{{ checksum "Tuist/Package.resolved" }}
+      - save_cache:
+          paths:
+            - ~/.local/share/mise
+            - ~/.local/bin/mise
+          key: mise-{{ checksum ".tool-versions" }}
+workflows:
+  build:
+    jobs:
+      - build
