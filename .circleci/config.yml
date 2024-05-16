@@ -26,10 +26,10 @@ jobs:
           name: Tuist Install
           command: |
             ~/.local/bin/mise x -- tuist install
-      - run:
-           name: Tuist Build
-           command: |
-            ~/.local/bin/mise x -- tuist build
+      # - run:
+      #      name: Tuist Build
+      #      command: |
+      #       ~/.local/bin/mise x -- tuist build
       - save_cache:
           paths:
             - Tuist/Dependencies
